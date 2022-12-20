@@ -1,25 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import NasaApiService from "./services/NasaApiService";
+import { useEffect, useState } from "react";
+import { Card, Container, Form, InputGroup, Row } from "react-bootstrap";
+
+interface IImageRequest {
+  date: string;
+  explanation: string;
+  hdurl: string;
+  title: string;
+  url: string;
+}
 
 function App() {
+  const [imageData, setImageData] = useState<IImageRequest>();
+  const [data, setData] = useState<string>("");
+
+  
+
+  useEffect(() => {
+    NasaApiService.get(data)
+      .then(({ data }) => {
+        setImageData(data);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, [data]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container className="d-flex align-items-center flex-column">
+         <InputGroup className="mt-5 w-25">
+          <Form.Control
+            placeholder="Data"
+            aria-label="Data"
+            type="date"
+            onChange={(e)=>setData(e.target.value)}
+          />
+        </InputGroup>
+        <Card className="w-50 m-5">
+          <Card.Img variant="top" src={imageData?.url} />
+          <Card.Body>
+            <Card.Title>{imageData?.title}</Card.Title>
+            <Card.Text>{imageData?.explanation}</Card.Text>
+          </Card.Body>
+        </Card>
+    </Container>
   );
 }
 
